@@ -271,6 +271,12 @@ async function handleLogin(e) {
             body: JSON.stringify({ username, password })
         });
         
+        // Check if response is JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Server did not return JSON. Is the Backend URL correct?");
+        }
+
         const result = await response.json();
         
         if (result.status === 'success') {
@@ -283,7 +289,8 @@ async function handleLogin(e) {
             showToast(result.message || 'Login failed', true);
         }
     } catch (error) {
-        showToast('Network error during login', true);
+        console.error('Login error:', error);
+        showToast(error.message || 'Network error during login', true);
     } finally {
         setAuthLoading(els.loginBtn, els.loginBtnText, els.loginBtnLoader, false);
     }
@@ -309,6 +316,11 @@ async function handleRegister(e) {
             body: JSON.stringify({ username, password })
         });
         
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Server did not return JSON. Is the Backend URL correct?");
+        }
+
         const result = await response.json();
         
         if (result.status === 'success') {
@@ -321,7 +333,8 @@ async function handleRegister(e) {
             showToast(result.message || 'Registration failed', true);
         }
     } catch (error) {
-        showToast('Network error during registration', true);
+        console.error('Registration error:', error);
+        showToast(error.message || 'Network error during registration', true);
     } finally {
         setAuthLoading(els.registerBtn, els.registerBtnText, els.registerBtnLoader, false);
     }
