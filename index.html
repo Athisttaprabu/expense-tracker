@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="auth-container" class="container">
+        <div class="auth-card glass-card">
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Login to your Expense Tracker</p>
+            
+            <form id="auth-form" novalidate>
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                </div>
+                
+                <button type="button" class="btn primary-btn w-100" id="login-btn">
+                    <span class="btn-text">Login</span>
+                    <span class="loader hidden"></span>
+                </button>
+                
+                <button type="button" class="btn secondary-btn w-100" id="register-btn" style="margin-top: 10px; background: transparent; border: 1px solid var(--primary); color: var(--text-main);">
+                    <span class="btn-text">Register New Account</span>
+                    <span class="loader hidden"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="app-container" class="container hidden">
+        <header class="glass-header">
+            <div class="header-left">
+                <h1>Expense Tracker</h1>
+                <p class="subtitle">Track your spending beautifully.</p>
+            </div>
+            <div class="header-right">
+                <span id="current-user-display" style="margin-right: 15px; font-weight: 500;"></span>
+                <div class="avatar" id="logout-btn" title="Logout" style="cursor: pointer;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Filters -->
+            <section class="filters-section glass-card">
+                <div class="filter-group">
+                    <label for="year-select"><i class="fa-regular fa-calendar"></i> Year</label>
+                    <select id="year-select"></select>
+                </div>
+                <div class="filter-group">
+                    <label for="month-select"><i class="fa-regular fa-calendar-days"></i> Month</label>
+                    <select id="month-select">
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <button id="refresh-btn" class="icon-btn primary"><i class="fa-solid fa-rotate-right"></i></button>
+            </section>
+
+            <div class="dashboard-grid">
+                <!-- Add Expense Form -->
+                <section class="add-expense-section glass-card">
+                    <h2><i class="fa-solid fa-plus-circle"></i> New Expense</h2>
+                    <form id="expense-form" novalidate>
+                        <div class="input-group">
+                            <label for="shop-name">Shop / Vendor</label>
+                            <input type="text" id="shop-name" placeholder="E.g., Amazon, Starbucks">
+                        </div>
+                        
+                        <div class="input-row">
+                            <div class="input-group amount-group">
+                                <label for="amount">Amount</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" id="amount" placeholder="0.00" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="category">Category</label>
+                                <select id="category">
+                                    <option value="" disabled selected>Select...</option>
+                                    <option value="Groceries">Groceries</option>
+                                    <option value="Dining">Dining</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Custom Category Input (Hidden by default) -->
+                        <div class="input-group hidden" id="custom-category-group">
+                            <label for="custom-category-name">Custom Category Name</label>
+                            <input type="text" id="custom-category-name" placeholder="E.g., Pet Supplies, Gym">
+                        </div>
+
+                        <button type="submit" class="btn primary-btn add-btn w-100">
+                            <span class="btn-text">Add Expense</span>
+                            <span class="loader hidden"></span>
+                        </button>
+                    </form>
+                </section>
+
+                <!-- Visualization -->
+                <section class="chart-section glass-card">
+                    <div class="chart-header">
+                        <h2><i class="fa-solid fa-chart-pie"></i> Spending Overview</h2>
+                        <div class="total-spend">
+                            <span class="label">Total this month:</span>
+                            <span class="amount" id="monthly-total">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="expenseChart"></canvas>
+                        <div id="chart-loader" class="glass-loader hidden">
+                            <div class="spinner"></div>
+                            <p>Loading Data...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Recent Expenses List -->
+            <section class="recent-expenses-section glass-card">
+                <h2><i class="fa-solid fa-list-ul"></i> Recent Expenses</h2>
+                <div class="table-responsive">
+                    <table id="expenses-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Shop</th>
+                                <th>Category</th>
+                                <th class="amount-col">Amount</th>
+                                <th></th> <!-- Delete Actions -->
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-list">
+                            <!-- Populated by JS -->
+                            <tr class="empty-state">
+                                <td colspan="5">No expenses found for this month.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check icon"></i>
+        <span class="message">Expense added successfully!</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
