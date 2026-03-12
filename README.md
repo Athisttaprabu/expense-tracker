@@ -61,7 +61,9 @@ To ensure your data is persistent across server restarts (especially on Render):
 ### 1. PostgreSQL Setup (Supabase)
 1. Create a [Supabase](https://supabase.com/) account and a new project.
 2. In your Supabase dashboard, go to **Project Settings > Database** and copy your **URI** connection string.
-3. Replace `[YOUR-PASSWORD]` with your actual database password.
+3. **IMPORTANT**: When setting your password, do **NOT** include brackets `[]` around it.
+   - ❌ `postgresql://postgres:[password]@db...`
+   - ✅ `postgresql://postgres:password@db...`
 
 ### 2. Configure Environment Variables
 - **On Render**: Go to your service's **Environment** tab and add a new secret:
