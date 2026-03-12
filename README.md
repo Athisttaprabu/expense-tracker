@@ -60,10 +60,12 @@ To ensure your data is persistent across server restarts (especially on Render):
 
 ### 1. PostgreSQL Setup (Supabase)
 1. Create a [Supabase](https://supabase.com/) account and a new project.
-2. In your Supabase dashboard, go to **Project Settings > Database** and copy your **URI** connection string.
-3. **IMPORTANT**: When setting your password, do **NOT** include brackets `[]` around it.
-   - ❌ `postgresql://postgres:[password]@db...`
-   - ✅ `postgresql://postgres:password@db...`
+2. In your Supabase dashboard, go to **Project Settings > Database**.
+3. **IMPORTANT**: For deployment on services like Render, use the **Connection Pooler** (Transaction Mode) which uses port **6543**. The Direct Connection (port 5432) often fails on Render due to IPv6 restrictions.
+4. Copy your **URI** connection string from the **Pooler** tab.
+5. **IMPORTANT**: When setting your password, do **NOT** include brackets `[]` around it.
+   - ❌ `postgresql://postgres:[password]@aws-0...:6543/...`
+   - ✅ `postgresql://postgres:password@aws-0...:6543/...`
 
 ### 2. Configure Environment Variables
 - **On Render**: Go to your service's **Environment** tab and add a new secret:
